@@ -3,7 +3,7 @@ before_script:
 
 job test:
   script:
-    - build.sh
+    - ./build.sh
     - make -C build/
     - cd build/ && ctest .
     
