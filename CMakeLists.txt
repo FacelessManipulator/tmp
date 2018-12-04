@@ -1,8 +1,9 @@
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 PROJECT(playground CXX C)
 set(VERSION 0.1.0)
+set (CMAKE_CXX_STANDARD 11)
 
 include(CTest)
 # include directories
