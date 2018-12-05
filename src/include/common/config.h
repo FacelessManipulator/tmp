@@ -17,15 +17,25 @@ class Config {
     using string = std::string;
     
     private:
-        static propertyPtr _property() {
+        // class Config works as singleton mode
+        static propertyPtr& _property() {
             static propertyPtr __property;
             return __property;
         }
 
     public:
-        static void parse(const string confPath) {
-            _property().reset(new property);
-            boost::property_tree::ini_parser::read_ini("config.ini", *_property());
+        static bool parse(const string confPath) {
+            try {
+                propertyPtr tmpProperty(new property);
+                boost::property_tree::ini_parser::read_ini(confPath, *tmpProperty);
+                _property().swap(tmpProperty);
+                return true;
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+                return false;
+            }
         }
 
         static propertyPtr getProperty() {
@@ -34,15 +44,16 @@ class Config {
 
         template <typename T>
         static T get(string key) {
-            return _property->get<T>(key);
+            return _property()->get<T>(key);
         }
 
         template <typename T>
         static void set(string key, T value) {
-            _property->add<T>(key, value);
+            _property()->put<T>(key, value);
         }
 
-        static void dump() {
+        // dump the current configuration to output stream.
+        static void dump(std::ostream &stream = std::cout) {
             boost::property_tree::ini_parser::write_ini(std::cout, *_property());
         }
 };
